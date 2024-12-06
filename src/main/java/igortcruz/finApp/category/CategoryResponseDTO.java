@@ -1,7 +1,7 @@
 package igortcruz.finApp.category;
 
-public record CategoryResponseDTO(Long id, String name) {
+public record CategoryResponseDTO(Long id, String name, String description) {
     public CategoryResponseDTO(Category category){
-        this(category.getId(), category.getName());
+        this(category.getId(), category.getName(), category.getDescription());
     }
 }
