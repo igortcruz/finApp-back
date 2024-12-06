@@ -1,14 +1,12 @@
 package igortcruz.finApp.category;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Table(name = "categories")
 @Entity(name = "Category")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -17,8 +15,10 @@ public class Category {
     private Long id;
     @Column(nullable = false)
     private String name;
+    private String description;
 
     public Category(CategoryRequestDTO data){
         this.name = data.name();
+        this.description = data.description();
     }
 }
