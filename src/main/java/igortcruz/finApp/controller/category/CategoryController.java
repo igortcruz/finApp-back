@@ -1,10 +1,9 @@
 package igortcruz.finApp.controller.category;
 
-import igortcruz.finApp.category.Category;
-import igortcruz.finApp.category.CategoryRepository;
 import igortcruz.finApp.category.CategoryRequestDTO;
 import igortcruz.finApp.category.CategoryResponseDTO;
-import jakarta.persistence.EntityNotFoundException;
+import igortcruz.finApp.exception.NotFoundException;
+import igortcruz.finApp.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,25 +13,24 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("category")
 public class CategoryController {
+
     @Autowired
-    private CategoryRepository repository;
+    private CategoryService categoryService;
 
     @GetMapping
     public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
-        return ResponseEntity.ok(repository.findAllByOrderByIdAsc().stream().map(CategoryResponseDTO::new).toList());
+        return ResponseEntity.ok(categoryService.fetchAllCategories());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponseDTO> getCategory(@PathVariable Long id){
-        Optional<Category> optionalCategory = repository.findById(id);
-        if (optionalCategory.isPresent()){
-            return ResponseEntity.ok(new CategoryResponseDTO(optionalCategory.get()));
-        }else {
+        try {
+            return ResponseEntity.ok(categoryService.retrieveCategoryById(id));
+        } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -40,32 +38,28 @@ public class CategoryController {
     @PostMapping
     @Transactional
     public ResponseEntity<CategoryResponseDTO> postCategory(@RequestBody CategoryRequestDTO data) {
-        Category categoryData = repository.save(new Category(data));
-        URI location = URI.create("category/" + categoryData.getId());
-        return ResponseEntity.created(location).body(new CategoryResponseDTO(categoryData));
+        CategoryResponseDTO categoryData = categoryService.saveCategory(data);
+        URI location = URI.create("category/" + categoryData.id());
+        return ResponseEntity.created(location).body(categoryData);
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity<Category> updateCategory(@RequestBody @Validated CategoryRequestDTO data) {
-        Optional<Category> optionalCategory = repository.findById(data.id());
-        if (optionalCategory.isPresent()) {
-            Category category = optionalCategory.get();
-            category.setDescription(data.description());
-            return ResponseEntity.ok(category);
-        } else {
-            throw new EntityNotFoundException();
+    public ResponseEntity<CategoryResponseDTO> putCategory(@RequestBody @Validated CategoryRequestDTO data) {
+        try {
+            return ResponseEntity.ok(categoryService.updateCategory(data));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
-        Optional<Category> optionalCategory = repository.findById(id);
-        if (optionalCategory.isPresent()){
-            repository.deleteById(optionalCategory.get().getId());
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        try {
+            categoryService.removeCategory(id);
             return ResponseEntity.noContent().build();
-        }else {
+        } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
