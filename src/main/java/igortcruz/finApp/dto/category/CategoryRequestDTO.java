@@ -1,6 +1,4 @@
-package igortcruz.finApp.category;
-
-import org.antlr.v4.runtime.misc.NotNull;
+package igortcruz.finApp.dto.category;
 
 public record CategoryRequestDTO(
         Long id,
