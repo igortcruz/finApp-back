@@ -1,6 +1,5 @@
-package igortcruz.finApp.model;
+package igortcruz.finApp.category;
 
-import igortcruz.finApp.dto.category.CategoryRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,7 +1,7 @@
-package igortcruz.finApp.controller;
+package igortcruz.finApp.controller.category;
 
-import igortcruz.finApp.dto.category.CategoryRequestDTO;
-import igortcruz.finApp.dto.category.CategoryResponseDTO;
+import igortcruz.finApp.category.CategoryRequestDTO;
+import igortcruz.finApp.category.CategoryResponseDTO;
 import igortcruz.finApp.exception.NotFoundException;
 import igortcruz.finApp.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;

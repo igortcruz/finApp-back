@@ -1,6 +1,4 @@
-package igortcruz.finApp.dto.category;
-
-import igortcruz.finApp.model.Category;
+package igortcruz.finApp.category;
 
 public record CategoryResponseDTO(Long id, String name, String description) {
     public CategoryResponseDTO(Category category){
