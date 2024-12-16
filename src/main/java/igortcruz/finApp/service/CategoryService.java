@@ -6,7 +6,10 @@ import igortcruz.finApp.dto.category.CategoryRequestDTO;
 import igortcruz.finApp.dto.category.CategoryResponseDTO;
 import igortcruz.finApp.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +29,13 @@ public class CategoryService {
     }
 
     public CategoryResponseDTO saveCategory(CategoryRequestDTO data) {
-        Category category = repository.save(new Category(data));
-        return new CategoryResponseDTO(category);
+        Optional<Category> optionalCategory = Optional.ofNullable(repository.findByName(data.name()));
+        if (optionalCategory.isPresent()) {
+            throw new DataIntegrityViolationException("Category already exists with name: " + data.name());
+        } else {
+            Category category = repository.save(new Category(data));
+            return new CategoryResponseDTO(category);
+        }
     }
 
     public CategoryResponseDTO updateCategory(CategoryRequestDTO data) throws NotFoundException {
@@ -45,9 +53,9 @@ public class CategoryService {
 
     public void removeCategory(Long id) throws NotFoundException {
         Optional<Category> optionalCategory = repository.findById(id);
-        if (optionalCategory.isPresent()){
+        if (optionalCategory.isPresent()) {
             repository.deleteById(id);
-        }else {
+        } else {
             throw new NotFoundException();
         }
     }
