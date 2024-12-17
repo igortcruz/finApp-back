@@ -29,7 +29,7 @@ public class CategoryService {
     }
 
     public CategoryResponseDTO saveCategory(CategoryRequestDTO data) {
-        Optional<Category> optionalCategory = Optional.ofNullable(repository.findByName(data.name()));
+        Optional<Category> optionalCategory = repository.findByName(data.name());
         if (optionalCategory.isPresent()) {
             throw new DataIntegrityViolationException("Category already exists with name: " + data.name());
         } else {
