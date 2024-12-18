@@ -115,4 +115,33 @@ class CategoryServiceTest {
             verify(categoryRepository, times(0)).save(any());
         }
     }
+
+    @Nested
+    public class UpdateCategory {
+        @Test
+        void SUCCESS_whenACategoryIsUpdated() throws NotFoundException {
+            //given
+            CategoryRequestDTO categoryRequestDTO = new CategoryRequestDTO(1L, "Casa Atualizada", "Descrição de Casa Atualizada");
+            Category category = new Category();
+            category.setId(1L);
+            category.setName("Casa");
+            category.setDescription("Descrição de Casa");
+            when(categoryRepository.findById(categoryRequestDTO.id())).thenReturn(Optional.of(category));
+            category.setName(categoryRequestDTO.name());
+            category.setDescription(categoryRequestDTO.description());
+            when(categoryRepository.save(category)).thenReturn(category);
+            //when
+            CategoryResponseDTO categoryResponseDTO = categoryService.updateCategory(categoryRequestDTO);
+            //then
+            assertEquals("Casa Atualizada", categoryResponseDTO.name());
+            assertEquals("Descrição de Casa Atualizada", categoryResponseDTO.description());
+            verify(categoryRepository, times(1)).findById(any());
+            verify(categoryRepository, times(1)).save(any());
+        }
+    }
+
+    @Nested
+    public class RemoveCategory {
+
+    }
 }
