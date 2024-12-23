@@ -138,10 +138,46 @@ class CategoryServiceTest {
             verify(categoryRepository, times(1)).findById(any());
             verify(categoryRepository, times(1)).save(any());
         }
+
+        @Test
+        void FAILURE_whenACategoryDoesNotFoundId() {
+            //given
+            Long categoryId = 1L;
+            CategoryRequestDTO categoryRequestDTO = new CategoryRequestDTO(categoryId, "Teste", "Teste descrição");
+            when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+            //when
+            NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> categoryService.updateCategory(categoryRequestDTO));
+            //then
+            verify(categoryRepository, times(1)).findById(categoryId);
+            assertNull(notFoundException.getMessage());
+        }
     }
 
     @Nested
     public class RemoveCategory {
+        @Test
+        void SUCCESS_whenACategoryHasBeenDeleted () throws NotFoundException {
+            //given
+            Long categoryId = 1L;
+            Category category = new Category(categoryId,"Teste Nome", "Teste Descrição");
+            when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+            doNothing().when(categoryRepository).deleteById(categoryId);
+            //when
+            categoryService.removeCategory(categoryId);
+            //then
+            verify(categoryRepository, times(1)).findById(categoryId);
+            verify(categoryRepository, times(1)).deleteById(categoryId);
+        }
 
+        @Test
+        void FAILURE_whenACategoryDoesNotFoundId () {
+            //given
+            Long categoryId = 1L;
+            when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+            //when
+            NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> categoryService.removeCategory(categoryId));
+            // then
+            verify(categoryRepository, times(1)).findById(categoryId);
+        }
     }
 }
