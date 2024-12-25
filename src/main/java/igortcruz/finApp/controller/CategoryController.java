@@ -5,7 +5,6 @@ import igortcruz.finApp.dto.category.CategoryResponseDTO;
 import igortcruz.finApp.exception.NotFoundException;
 import igortcruz.finApp.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +30,7 @@ public class CategoryController {
         try {
             return ResponseEntity.ok(categoryService.retrieveCategoryById(id));
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new NotFoundException(id);
         }
     }
 
@@ -49,7 +48,7 @@ public class CategoryController {
         try {
             return ResponseEntity.ok(categoryService.updateCategory(data));
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new NotFoundException(data.id());
         }
     }
 
@@ -60,7 +59,7 @@ public class CategoryController {
             categoryService.removeCategory(id);
             return ResponseEntity.noContent().build();
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new NotFoundException(id);
         }
     }
 
