@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +52,7 @@ class CategoryServiceTest {
         }
 
         @Test
-        void SUCCESS_whenIdExist() {
+        void FAILURE_whenIdDoesNotExist() {
             //given
             Long categoryId = 1L;
             when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
@@ -61,11 +60,11 @@ class CategoryServiceTest {
             NotFoundException exception = assertThrows(NotFoundException.class, () -> categoryService.retrieveCategoryById(categoryId));
             //then
             verify(categoryRepository, times(1)).findById(categoryId);
-            assertNull(exception.getMessage());
+            assertEquals(exception.getMessage(),"Não foi encontrado ID: " + categoryId);
         }
 
         @Test
-        void FAILURE_whenIdDoesNotExist() throws NotFoundException {
+        void SUCCESS_whenIdExist() throws NotFoundException {
             // given
             Long categoryId = 1L;
             Category category = new Category(categoryId, "Energia", "Categoria de Energia");
@@ -111,7 +110,7 @@ class CategoryServiceTest {
             CategoryNameAlreadyExistsException exception = assertThrows(CategoryNameAlreadyExistsException.class, () -> categoryService.saveCategory(categoryRequestDTO));
             //then
             assertEquals(categoryRequestDTO.name(), category.getName());
-            assertEquals(exception.getMessage(), "Category already exists with name: " + categoryRequestDTO.name());
+            assertEquals(exception.getMessage(), "Já existe Categoria com este nome: " + categoryRequestDTO.name());
             verify(categoryRepository, times(1)).findByName(categoryRequestDTO.name());
             verify(categoryRepository, times(0)).save(any());
         }
@@ -150,7 +149,7 @@ class CategoryServiceTest {
             NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> categoryService.updateCategory(categoryRequestDTO));
             //then
             verify(categoryRepository, times(1)).findById(categoryId);
-            assertNull(notFoundException.getMessage());
+            assertEquals(notFoundException.getMessage(), "Não foi encontrado ID: " + categoryRequestDTO.id());
         }
     }
 
@@ -179,6 +178,7 @@ class CategoryServiceTest {
             NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> categoryService.removeCategory(categoryId));
             // then
             verify(categoryRepository, times(1)).findById(categoryId);
+            assertEquals(notFoundException.getMessage(), "Não foi encontrado ID: " + categoryId);
         }
     }
 }
