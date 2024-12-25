@@ -2,6 +2,7 @@ package igortcruz.finApp.service;
 
 import igortcruz.finApp.dto.category.CategoryRequestDTO;
 import igortcruz.finApp.dto.category.CategoryResponseDTO;
+import igortcruz.finApp.exception.CategoryNameAlreadyExistsException;
 import igortcruz.finApp.exception.NotFoundException;
 import igortcruz.finApp.model.Category;
 import igortcruz.finApp.repository.CategoryRepository;
@@ -107,7 +108,7 @@ class CategoryServiceTest {
 
             when(categoryRepository.findByName(categoryRequestDTO.name())).thenReturn(Optional.of(category));
             //when
-            DataIntegrityViolationException exception = assertThrows(DataIntegrityViolationException.class, () -> categoryService.saveCategory(categoryRequestDTO));
+            CategoryNameAlreadyExistsException exception = assertThrows(CategoryNameAlreadyExistsException.class, () -> categoryService.saveCategory(categoryRequestDTO));
             //then
             assertEquals(categoryRequestDTO.name(), category.getName());
             assertEquals(exception.getMessage(), "Category already exists with name: " + categoryRequestDTO.name());
