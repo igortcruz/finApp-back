@@ -24,6 +24,7 @@ public class CategoryService {
     public CategoryResponseDTO retrieveCategoryById(Long id) throws NotFoundException {
         Optional<Category> optionalCategory = repository.findById(id);
         //return optionalCategory.map(CategoryResponseDTO::new).orElseThrow(new NotFoundException(String.format("Cannot find Category with ID: " + id))); //.map : se a Categoria estiver presente no Optional<Category> ele mapeia passando o valor para um novo CategoryResponseDTO (CategoryResponseDTO::new) se não estiver ele joga um Exception (NotFoundException::new)
+        //return optionalCategory.map(CategoryResponseDTO::new).orElseThrow(new NotFoundException(String.format("Cannot find Category with ID: " + id))); //.map : se a Categoria estiver presente no Optional<Category> ele mapeia passando o valor para um novo CategoryResponseDTO (CategoryResponseDTO::new) se não estiver ele joga um Exception (NotFoundException::new)
         if (optionalCategory.isPresent()) {
             Category category = optionalCategory.orElse(new Category());
             return new CategoryResponseDTO(category);
