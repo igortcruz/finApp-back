@@ -19,9 +19,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Dar permissão ao Maven Wrapper
-        run: chmod +x mvnw
-
       - name: Construir o Projeto
         run: ./mvnw clean install
 
